@@ -25,8 +25,11 @@ head_check = [(14 << 4)+11, (9 << 4), (1 << 4)+4, (6 << 4)+15]
 head_pic = [5, 5, 10, 10, 5, 5, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8]
 pic_header = [15, 15, 4, 15, 15, 15, 5, 1]
 
-# 获取下一个字节数据
+
 def getNext(fread):
+    """
+    获取下一个字节数据
+    """
     try:
         # 读取一个字节的内容
         data_raw = fread.read(1)
@@ -41,9 +44,11 @@ def getNext(fread):
         return -1
 
 
-# 获取连续多个字节数据
-# 连续读取nums个字节
 def getData(fread, nums):
+    """
+    获取连续多个字节数据
+    连续读取nums个字节
+    """
     data = []
     error = True
     for i in range(nums):
@@ -64,9 +69,11 @@ def getData(fread, nums):
     return data,error
 
 
-# 写二进制文件
-# filename为文件名
 def fileWrite(data, file):
+    """
+    写二进制文件
+    filename为文件名
+    """
     for x in data:
         # 打包回二进制
         a = struct.pack('B', x)
@@ -74,26 +81,32 @@ def fileWrite(data, file):
         file.write(a)
 
 
-# 获取目标同步头对应数值
-# 同步头一位代表四个二进制位
 def getTarget(target):
+    """
+    获取目标同步头对应数值
+    同步头一位代表四个二进制位
+    """
     ans = 0
     for i in target:
         ans = (ans << 4) + i
     return ans
 
 
-# 获取目标list对应值，按字节转换
-# list头代表八个二进制位
 def getResult(target):
+    """
+    获取目标list对应值，按字节转换
+    list头代表八个二进制位
+    """
     ans = 0
     for i in target:
         ans = (ans << 8) + i
     return ans
 
 
-# 寻找数据帧的探头
 def findFrameHead(fread, head_target):
+    """
+    寻找数据帧的探头
+    """
     now = 0
     # 获取数据头的内容
     target = getTarget(head_target)
@@ -108,10 +121,12 @@ def findFrameHead(fread, head_target):
     return 1
 
 
-# 寻找图片帧的开头
-# 输出图片帧开头所在的坐标第一个位置
-# 否则输出len(data)-7
 def findPicHead(data):
+    """
+    寻找图片帧的开头
+    输出图片帧开头所在的坐标第一个位置
+    否则输出len(data)-7
+    """
     n = len(data)
     # print(n)
     index = 0
@@ -132,8 +147,11 @@ def findPicHead(data):
     return n - 7
 
 
-# 解析辅助数据并构造header(字典)
+
 def processHeader(stream: BytesIO):
+    """
+    解析辅助数据并构造header(字典)
+    """
     headDic = {}
     headList = []
     # stream代表输入的辅助数据流
@@ -346,8 +364,11 @@ def processHeader(stream: BytesIO):
     return headDic, headList
 
 
-# 对图片帧文件进行处理
+
 def processPicStream(data):
+    """
+    对图片帧文件进行处理
+    """
     # 提取自定义数据区
     dataHead = data[8: 8 + 280]
     headStream = BytesIO()
@@ -393,10 +414,13 @@ def processPicStream(data):
     return headDic, headList, FileList
 
 
-# 对读取的数据做异或检查
-# 输出bool
-# 检查通过则为True 不通过为False
+
 def check(data, Error_control):
+    """
+    对读取的数据做异或检查
+    输出bool
+    检查通过则为True 不通过为False
+    """
     check_xor = deepcopy(Error_control)
     # 获取异或检查长度
     control_num = len(Error_control)
@@ -417,11 +441,14 @@ def check(data, Error_control):
         check_ans |= x
     return True
 
-# 输入文件流 对文件流工作
-# 输出List
-# 格式 每个元素为一个文件流和一个list
-# 文件流为头文件信息 list为所有子图片的文件流
+
 def dataWork(fread):
+    """
+    输入文件流 对文件流工作
+    输出List
+    格式 每个元素为一个文件流和一个list
+    文件流为头文件信息 list为所有子图片的文件流
+    """
     # num统计读取文件数量
     num = 0
     # 记录图片帧内容
@@ -511,9 +538,12 @@ def dataWork(fread):
     return header_dic_data, header_list_data, pic_data
 
 
-# 用于并行工作
-# 输入为文件楼，起始字符地址，终止地址坐标
+
 def parallel_work(fread, start_byte):
+    """
+    用于并行工作
+    输入为文件楼，起始字符地址，终止地址坐标
+    """
     # 确定文件末尾位置
     end_byte = start_byte + config.iteration_chunk_size
     # 寻找文件的开头位置
