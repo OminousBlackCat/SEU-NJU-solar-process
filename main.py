@@ -5,11 +5,11 @@
 
 本py文件为程序入口, 包含了在并行过程中各种数据流的传输过程与子程序任务的分配过程
 代码可以分为五段:
-section 1. frame process pre(帧处理过程前的预处理, 包含读入参数, 分配全局数组等)
-section 2. 并行分配TaskA
-section 3. data process pre(图像预处理流程前的预操作, 包含寻找序列, reshape全局数组等)
-section 4. 并行分配TaskB
-section 5. 删除临时文件, 退出程序
+section 1. frame-process-pre(帧处理过程前的预处理, 包含读入参数, 分配全局数组等)
+section 2. multiprocess-task-A(并行分配TaskA)
+section 3. data-process-pre(图像预处理流程前的预操作, 包含寻找序列, reshape全局数组等)
+section 4. multiprocess-task-B(并行分配TaskB)
+section 5. ending-operation(删除临时文件, 安全退出程序等)
 
 子程序包含两项主要task
 TaskA:  frame_task(start_byte: int)->(output: dict)
@@ -20,6 +20,11 @@ TaskB:  sequence_task(sequence_index: int)->(output: file)
 """
 
 import multiprocessing
+
+"""
+SECTION 1: FRAME_PROCESS_PRE
+
+"""
 
 
 def frame_task(start_byte: int):
