@@ -21,7 +21,7 @@ import struct
 # 太阳空间望远镜科学载荷数据同步头[14,11,9,0,1,4,6,15]
 # 图像帧同步头[5,5,10,10,5,5,10,10]
 head_data = [14, 11, 9, 0, 1, 4, 6, 15]
-head_check = [(14 << 4)+11, (9 << 4), (1 << 4)+4, (6 << 4)+15]
+head_check = [(14 << 4) + 11, (9 << 4), (1 << 4) + 4, (6 << 4) + 15]
 head_pic = [5, 5, 10, 10, 5, 5, 10, 10, 1, 2, 3, 4, 5, 6, 7, 8]
 pic_header = [15, 15, 4, 15, 15, 15, 5, 1]
 
@@ -66,7 +66,7 @@ def getData(fread, nums):
     while len(data) < nums:
         data.append(0)
     # 返回内容
-    return data,error
+    return data, error
 
 
 def fileWrite(data, file):
@@ -145,7 +145,6 @@ def findPicHead(data):
     if now == target:
         return index - 8
     return n - 7
-
 
 
 def processHeader(stream: BytesIO):
@@ -364,7 +363,6 @@ def processHeader(stream: BytesIO):
     return headDic, headList
 
 
-
 def processPicStream(data):
     """
     对图片帧文件进行处理
@@ -392,7 +390,7 @@ def processPicStream(data):
     # print(M)
     # 不足8的倍数补0
     if M == 0:
-        return [],[],[]
+        return [], [], []
     while len(data) % 8 > 0:
         data.append(0)
     # 输出所有文件
@@ -412,7 +410,6 @@ def processPicStream(data):
     FileList[M - 1].seek(0)
     headDic, headList = processHeader(headStream)
     return headDic, headList, FileList
-
 
 
 def check(data, Error_control):
@@ -479,7 +476,7 @@ def dataWork(fread):
         ErrorControl, not_error = getData(fread, 4)
         if not_error:
             break
-        if not check([head_check, MainHead,Data],ErrorControl):
+        if not check([head_check, MainHead, Data], ErrorControl):
             fread.seek(now)
             continue
         # 在数据帧中寻找图像帧开头，如果有输出图像帧开头的index
@@ -502,10 +499,10 @@ def dataWork(fread):
                 # 处理图像帧内容
                 headerDic, headerList, picList = processPicStream(PicData)
                 # 存储图片头部信息
-                if len(headerDic)>0 :
+                if len(headerDic) > 0:
                     header_dic_data.append(deepcopy(headerDic))
                     header_list_data.append(deepcopy(headerList))
-                # 储存图片信息
+                    # 储存图片信息
                     pic_data.append(deepcopy(picList))
             # 情况图像帧
             PicData = []
@@ -526,7 +523,7 @@ def dataWork(fread):
             if len(headerDic) > 0:
                 header_dic_data.append(deepcopy(headerDic))
                 header_list_data.append(deepcopy(headerList))
-            # 储存图片信息
+                # 储存图片信息
                 pic_data.append(deepcopy(picList))
         except BaseException as exception:
             # 文件读完返回-1
@@ -536,7 +533,6 @@ def dataWork(fread):
     util.log("发现图片帧：" + str(num))
     # 输出所有图片信息
     return header_dic_data, header_list_data, pic_data
-
 
 
 def parallel_work(fread, start_byte):
@@ -611,7 +607,7 @@ def parallel_work(fread, start_byte):
                         # 储存图片信息
                         pic_data.append(deepcopy(picList))
                     # 判断终止条件
-                    if now > end_byte :
+                    if now > end_byte:
                         PicData = []
                         break
                 # 情况图像帧
